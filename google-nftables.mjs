@@ -63,8 +63,8 @@ async function main() {
                 });
         }
 
-        await fs.writeFileSync(RULES_FILE, nft.join('\n '));
-        await execSync(POST_COMMAND);
+        fs.writeFileSync(RULES_FILE, nft.join('\n '));
+        execSync(POST_COMMAND);
 }
 
 await main();
