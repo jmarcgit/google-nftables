@@ -63,7 +63,7 @@ async function main() {
                 });
         }
 
-        writeFileSync(RULES_FILE, nft.join('\n '));
+        writeFileSync(RULES_FILE, nft.join('\n'));
         execSync(POST_COMMAND);
 }
 
