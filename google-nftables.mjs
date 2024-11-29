@@ -1,7 +1,7 @@
 #!/usr/bin/node
 
 import {writeFileSync} from 'fs';
-import {execSync} from "child_process";
+import {execSync} from 'child_process';
 //const {excludeCidr} = await import(execSync("npm root -g").toString().trim() + '/cidr-tools/dist/index.js');
 const {exclude} = await import(execSync("npm root -g").toString().trim() + '/fast-cidr-tools/dist/index.cjs');
 
