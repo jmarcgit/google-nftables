@@ -2,8 +2,8 @@
 
 import {writeFileSync} from 'fs';
 import {execSync} from 'child_process';
-//const {excludeCidr} = await import(execSync("npm root -g").toString().trim() + '/cidr-tools/dist/index.js');
-const {exclude} = await import(execSync("npm root -g").toString().trim() + '/fast-cidr-tools/dist/index.cjs');
+const {excludeCidr} = await import(execSync("npm root -g").toString().trim() + '/cidr-tools/dist/index.js');
+//const excludeCidr = (await import(execSync("npm root -g").toString().trim() + '/fast-cidr-tools/dist/index.cjs')).exclude;
 
 const GOOGLE_IPRANGES_URL = 'https://www.gstatic.com/ipranges/goog.json';
 const GCLOUD_IPRANGES_URL = 'https://www.gstatic.com/ipranges/cloud.json';
@@ -50,14 +50,14 @@ async function main() {
         nft.push('');
 
         if (IPV4) {
-                const ipranges_ipv4 = exclude(google_ipranges.ipv4, gcloud_ipranges.ipv4);
+                const ipranges_ipv4 = excludeCidr(google_ipranges.ipv4, gcloud_ipranges.ipv4);
                 ipranges_ipv4.forEach(function(range) {
                         writeIPv4Rule(nft, range); 
                 });
         }
 
         if (IPV6) {
-                const ipranges_ipv6 = exclude(google_ipranges.ipv6, gcloud_ipranges.ipv6);
+                const ipranges_ipv6 = excludeCidr(google_ipranges.ipv6, gcloud_ipranges.ipv6);
                 ipranges_ipv6.forEach(function(range) {
                         writeIPv6Rule(nft, range);
                 });
