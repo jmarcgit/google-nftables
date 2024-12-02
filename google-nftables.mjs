@@ -1,6 +1,6 @@
 #!/usr/bin/node
 
-import {writeFileSync} from 'fs';
+import {writeFileSync, readFileSync, existsSync} from 'fs';
 import {execSync} from 'child_process';
 const {excludeCidr} = await import(execSync("npm root -g").toString().trim() + '/cidr-tools/dist/index.js');
 //const excludeCidr = (await import(execSync("npm root -g").toString().trim() + '/fast-cidr-tools/dist/index.cjs')).exclude;
@@ -8,7 +8,7 @@ const {excludeCidr} = await import(execSync("npm root -g").toString().trim() + '
 const GOOGLE_IPRANGES_URL = 'https://www.gstatic.com/ipranges/goog.json';
 const GCLOUD_IPRANGES_URL = 'https://www.gstatic.com/ipranges/cloud.json';
 const IPV4 = true;
-const IPV6 = false;
+const IPV6 = true;
 const RULES_FILE = '/etc/nftables.d/99google.nft';
 const CHAIN = 'input';
 const IPV4_FAMILY = 'inet';
@@ -20,7 +20,7 @@ const POST_COMMAND = 'rc-service nftables restart';
 async function getIpRangesFromServer(url) {
         const response = await fetch(url);
         const json = await response.json();
-        const ranges = {ipv4: [], ipv6: []};
+        const ranges = {syncToken: json.syncToken, ipv4: [], ipv6: []};
         json.prefixes.forEach(function(prefix) {
                 if ('ipv4Prefix' in prefix) ranges.ipv4.push(prefix.ipv4Prefix);
                 if ('ipv6Prefix' in prefix) ranges.ipv6.push(prefix.ipv6Prefix);
@@ -45,8 +45,16 @@ async function main() {
 
         const google_ipranges = await getIpRangesFromServer(GOOGLE_IPRANGES_URL);
         const gcloud_ipranges = await getIpRangesFromServer(GCLOUD_IPRANGES_URL);
+
+        const syncHeader = '# syncToken: ' + google_ipranges.syncToken + '-' + gcloud_ipranges.syncToken;
+
+        if (existsSync(RULES_FILE)) {
+                if (readFileSync(RULES_FILE).includes(syncHeader)) return;
+        }
+        
         const nft = [];
         nft.push('#!/usr/sbin/nft -f');
+        nft.push(syncHeader);
         nft.push('');
 
         if (IPV4) {
