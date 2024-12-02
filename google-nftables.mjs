@@ -15,7 +15,7 @@ const IPV4_FAMILY = 'inet';
 const IPV6_FAMILY = 'inet';
 const TABLE = 'filter';
 const PORT = 8080;
-const POST_COMMAND = 'rc-service nftables restart';
+const POST_COMMAND = 'rc-service nftables reload';
 
 async function getIpRangesFromServer(url) {
         const response = await fetch(url);
