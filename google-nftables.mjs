@@ -14,7 +14,7 @@ const CHAIN = 'input';
 const IPV4_FAMILY = 'inet';
 const IPV6_FAMILY = 'inet';
 const TABLE = 'filter';
-const PORT = 8080;
+const PORT = 9999;
 const POST_COMMAND = 'rc-service nftables reload';
 
 async function getIpRangesFromServer(url) {
@@ -22,8 +22,8 @@ async function getIpRangesFromServer(url) {
         const json = await response.json();
         const ranges = {syncToken: json.syncToken, ipv4: [], ipv6: []};
         json.prefixes.forEach(function(prefix) {
-                if ('ipv4Prefix' in prefix) ranges.ipv4.push(prefix.ipv4Prefix);
-                if ('ipv6Prefix' in prefix) ranges.ipv6.push(prefix.ipv6Prefix);
+                if (IPV4 && ('ipv4Prefix' in prefix)) ranges.ipv4.push(prefix.ipv4Prefix);
+                if (IPV6 && ('ipv6Prefix' in prefix)) ranges.ipv6.push(prefix.ipv6Prefix);
         });
         return ranges;
 }
